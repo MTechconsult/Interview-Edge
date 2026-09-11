@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InterviewEdge — STAR Interview Coach</title>
+<style>
+  :root{
+    --navy-deep:#08152C;
+    --navy:#0B1E3D;
+    --navy-light:#132A52;
+    --gold:#C9A227;
+    --gold-soft:#E7CE7C;
+    --paper:#F7F5EF;
+    --ink:#1C2430;
+    --muted:#6B7280;
+    --line:#DCD6C4;
+    --success:#3D7A5C;
+    --danger:#9A3B3B;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+  }
+  h1,h2,h3,.serif{
+    font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;
+  }
+
+  /* ---------- Setup screen ---------- */
+  #setup{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      linear-gradient(180deg, var(--navy-deep), var(--navy) 70%);
+    padding:32px 16px;
+  }
+  .setup-card{
+    max-width:560px;
+    width:100%;
+    background:var(--paper);
+    border-radius:4px;
+    padding:40px 36px;
+    box-shadow:0 30px 60px rgba(0,0,0,.35);
+    position:relative;
+  }
+  .setup-card::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:4px;
+    background:var(--gold);
+    border-radius:4px 4px 0 0;
+  }
+  .section-label{
+    font-size:12px;
+    color:var(--gold);
+    background:var(--navy-deep);
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:2px;
+    margin:22px 0 12px;
+  }
+  .star-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  @media (max-width:480px){.star-grid{grid-template-columns:1fr;}}
+  .star-card-mini{
+    background:#fff;
+    border:1px solid var(--line);
+    border-left:3px solid var(--gold);
+    padding:10px 12px;
+    border-radius:2px;
+  }
+  .star-card-mini .letter{
+    font-family:Georgia,serif;
+    font-size:17px;
+    color:var(--navy);
+    font-weight:700;
+  }
+  .star-card-mini p{
+    font-size:12px;
+    color:var(--muted);
+    margin:2px 0 0;
+  }
+  .eyebrow-note{
+    font-size:13px;
+    color:var(--muted);
+    margin:0 0 6px;
+  }
+  .setup-card h1{
+    font-size:28px;
+    margin:0 0 6px;
+    color:var(--navy);
+  }
+  .setup-card p.lead{
+    color:var(--muted);
+    margin:0 0 28px;
+    font-size:15px;
+  }
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--navy);
+    margin:18px 0 6px;
+  }
+  select,input[type=text]{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    font-size:15px;
+    background:#fff;
+    color:var(--ink);
+    font-family:inherit;
+  }
+  select:focus,input:focus,textarea:focus,button:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:1px;
+  }
+  .btn{
+    display:inline-block;
+    border:none;
+    border-radius:3px;
+    padding:12px 22px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .btn-primary{
+    background:var(--navy);
+    color:var(--gold-soft);
+  }
+  .btn-primary:hover{background:var(--navy-light);}
+  .btn-gold{
+    background:var(--gold);
+    color:var(--navy-deep);
+  }
+  .btn-gold:hover{background:var(--gold-soft);}
+  .btn-ghost{
+    background:transparent;
+    color:var(--navy);
+    border:1px solid var(--line);
+  }
+  .btn-ghost:hover{border-color:var(--navy);}
+  .btn-row{margin-top:30px; display:flex; gap:10px; flex-wrap:wrap;}
+
+  /* ---------- App shell ---------- */
+  #app{display:none; min-height:100vh;}
+  .topbar{
+    background:var(--navy-deep);
+    color:var(--paper);
+    padding:14px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    border-bottom:3px solid var(--gold);
+  }
+  .brand{display:flex; align-items:baseline; gap:10px;}
+  .brand .name{font-family:Georgia,serif; font-size:19px; letter-spacing:.3px;}
+  .brand .tag{font-size:12px; color:var(--gold-soft); opacity:.85;}
+  .topbar .meta{font-size:12.5px; color:#C7CEDA;}
+  .topbar-actions{display:flex; gap:8px;}
+  .topbar-actions button{
+    background:transparent;
+    border:1px solid rgba(255,255,255,.25);
+    color:var(--paper);
+    padding:7px 12px;
+    border-radius:3px;
+    font-size:13px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .topbar-actions button:hover{border-color:var(--gold);}
+
+  .layout{
+    display:grid;
+    grid-template-columns:300px 1fr;
+    min-height:calc(100vh - 60px);
+  }
+  @media (max-width:820px){
+    .layout{grid-template-columns:1fr;}
+    .rail{order:2; border-top:1px solid var(--line);}
+  }
+
+  .rail{
+    background:#F0ECE0;
+    border-right:1px solid var(--line);
+    padding:18px 0;
+    overflow-y:auto;
+  }
+  .rail h2{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--muted);
+    padding:0 18px;
+    margin:18px 0 8px;
+  }
+  .rail h2:first-child{margin-top:0;}
+  .cat-progress{
+    font-weight:400;
+    text-transform:none;
+    letter-spacing:0;
+    color:var(--muted);
+  }
+  .q-item{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    padding:9px 18px;
+    cursor:pointer;
+    font-size:13.5px;
+    border-left:3px solid transparent;
+    color:var(--ink);
+  }
+  .q-item:hover{background:#E6E0CE;}
+  .q-item.active{
+    background:#fff;
+    border-left-color:var(--gold);
+    font-weight:600;
+  }
+  .q-dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--line);
+    margin-top:6px;
+    flex-shrink:0;
+  }
+  .q-dot.done{background:var(--success);}
+
+  .workspace{
+    padding:30px 40px 60px;
+    max-width:760px;
+  }
+  @media (max-width:600px){.workspace{padding:20px 18px 50px;}}
+
+  .q-header{
+    border-bottom:1px solid var(--line);
+    padding-bottom:18px;
+    margin-bottom:24px;
+  }
+  .q-header .cat-label{
+    font-size:12px;
+    color:var(--gold);
+    background:var(--navy-deep);
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:2px;
+    margin-bottom:10px;
+  }
+  .q-header h2{font-size:22px; margin:0 0 8px; color:var(--navy);}
+  .q-header .helper{color:var(--muted); font-size:14px;}
+
+  .example-toggle{
+    background:none;
+    border:none;
+    color:var(--navy);
+    text-decoration:underline;
+    font-size:13px;
+    cursor:pointer;
+    padding:0;
+    font-family:inherit;
+  }
+  .example-box{
+    background:#F0ECE0;
+    border-left:3px solid var(--gold);
+    padding:14px 16px;
+    margin:10px 0 22px;
+    font-size:13.5px;
+    border-radius:2px;
+    display:none;
+  }
+  .example-box.show{display:block;}
+  .example-box p{margin:0 0 8px;}
+  .example-box p:last-child{margin-bottom:0;}
+  .example-box b{color:var(--navy);}
+
+  .timer-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:22px;
+    font-size:14px;
+  }
+  .timer-display{
+    font-variant-numeric:tabular-nums;
+    font-size:20px;
+    color:var(--navy);
+    font-weight:600;
+    min-width:64px;
+  }
+
+  .star-field{margin-bottom:20px;}
+  .star-field label{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    color:var(--navy);
+    font-family:Georgia,serif;
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .star-field .hint{
+    font-size:12.5px;
+    color:var(--muted);
+    font-weight:400;
+    font-family:inherit;
+  }
+  textarea{
+    width:100%;
+    min-height:80px;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    font-size:14.5px;
+    font-family:inherit;
+    resize:vertical;
+    color:var(--ink);
+  }
+
+  .save-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-top:26px;
+    flex-wrap:wrap;
+  }
+  .save-status{font-size:13px; color:var(--success);}
+
+  .nav-buttons{
+    display:flex;
+    justify-content:space-between;
+    margin-top:34px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+  }
+
+  /* ---------- Review screen ---------- */
+  #reviewPanel .review-item{
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:16px 18px;
+    margin-bottom:14px;
+    background:#fff;
+  }
+  #reviewPanel .review-item h3{
+    font-size:16px;
+    margin:0 0 4px;
+    color:var(--navy);
+  }
+  #reviewPanel .review-item .cat{
+    font-size:11.5px;
+    color:var(--gold);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  #reviewPanel .star-line{font-size:13.5px; margin:8px 0;}
+  #reviewPanel .star-line b{color:var(--navy);}
+
+  .empty-note{
+    color:var(--muted);
+    font-size:14px;
+    padding:30px 0;
+  }
+
+  footer.app-footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    padding:26px 18px 30px;
+    border-top:1px solid var(--line);
+  }
+  footer.app-footer a{color:var(--navy);}
+
+  @media print{
+    .topbar, .rail, .nav-buttons, .btn-row, .timer-row{display:none !important;}
+    .layout{display:block;}
+    .workspace{max-width:100%; padding:0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SETUP SCREEN ============ -->
+<div id="setup">
+  <div class="setup-card">
+    <p class="eyebrow-note">MTech Concept Solutions · Career Tools</p>
+    <h1>InterviewEdge</h1>
+    <p class="lead">A structured practice space for building clear, honest interview answers using the STAR method — Situation, Task, Action, Result. Everything you write stays on this device.</p>
+    <p class="lead" style="color:var(--navy); font-weight:600; font-size:13.5px; margin-top:-18px;">Interview this week? You can draft your first three answers in under 30 minutes.</p>
+
+    <span class="section-label">How it works</span>
+    <div class="star-grid">
+      <div class="star-card-mini"><div class="letter">S</div><p>Situation — set the scene</p></div>
+      <div class="star-card-mini"><div class="letter">T</div><p>Task — your responsibility</p></div>
+      <div class="star-card-mini"><div class="letter">A</div><p>Action — what you did</p></div>
+      <div class="star-card-mini"><div class="letter">R</div><p>Result — the outcome</p></div>
+    </div>
+
+    <label for="industrySelect">Your industry or field</label>
+    <select id="industrySelect">
+      <option value="general">General / Other</option>
+      <option value="sales">Sales &amp; Business Development</option>
+      <option value="tech">Tech &amp; IT</option>
+      <option value="support">Customer Service &amp; Support</option>
+      <option value="marketing">Marketing &amp; Communications</option>
+      <option value="finance">Finance &amp; Administration</option>
+      <option value="healthcare">Healthcare</option>
+      <option value="education">Education &amp; Training</option>
+    </select>
+
+    <label for="roleInput">Role you're interviewing for (optional)</label>
+    <input type="text" id="roleInput" placeholder="e.g. Customer Success Associate">
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="startApp()">Start practicing</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MAIN APP ============ -->
+<div id="app">
+  <div class="topbar">
+    <div class="brand">
+      <span class="name">InterviewEdge</span>
+      <span class="tag">STAR Interview Coach</span>
+    </div>
+    <div class="meta" id="roleMeta"></div>
+    <div class="topbar-actions">
+      <button onclick="showPractice()">Practice</button>
+      <button onclick="showReview()">My Answers</button>
+      <button onclick="exportAnswers()">Export</button>
+      <button onclick="window.print()">Print / PDF</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="rail" id="rail"></div>
+
+    <div class="workspace" id="workspace">
+      <!-- Practice view -->
+      <div id="practicePanel"></div>
+      <!-- Review view -->
+      <div id="reviewPanel" style="display:none;"></div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    Built by MTech Concept Solutions<br>
+    Your answers are saved only on this device and are not sent anywhere.
+  </footer>
+</div>
+
+<script>
+/* ============ QUESTION BANK ============ */
+const CORE_CATEGORIES = [
+  {
+    id: "behavioral",
+    label: "Behavioral",
+    questions: [
+      "Tell me about yourself.",
+      "Describe a time you failed at something. What did you learn?",
+      "Tell me about a time you went above and beyond what was expected of you.",
+      "Describe a time you had to learn something new quickly to get a task done.",
+      "Tell me about your greatest professional achievement so far."
+    ]
+  },
+  {
+    id: "problem-solving",
+    label: "Problem-Solving & Situational",
+    questions: [
+      "Describe a time you solved a difficult problem with limited resources.",
+      "Tell me about a mistake you made at work and how you fixed it.",
+      "How would you handle a situation where your priorities suddenly changed?",
+      "Describe a time you had to make a decision without all the information you wanted.",
+      "Tell me about a time you improved a process, tool, or way of doing something."
+    ]
+  },
+  {
+    id: "teamwork",
+    label: "Teamwork & Conflict",
+    questions: [
+      "Describe a disagreement with a coworker and how you resolved it.",
+      "Tell me about a time you had to work closely with someone difficult.",
+      "Describe your role in a project that succeeded because of good teamwork.",
+      "Tell me about a time you disagreed with a manager's decision.",
+      "How do you usually respond when you receive critical feedback?"
+    ]
+  },
+  {
+    id: "career-story",
+    label: "Your Career Story",
+    questions: [
+      "Why are you leaving your current role, or why did you leave your last one?",
+      "Is there a gap in your work history you'd like to explain?",
+      "Why do you want to work with us specifically?",
+      "Where do you see yourself in five years?",
+      "What are you looking for in your next role?"
+    ]
+  },
+  {
+    id: "closing",
+    label: "Closing & Salary",
+    questions: [
+      "What are your salary expectations for this role?",
+      "Do you have any questions for us?",
+      "Why should we hire you over other candidates?",
+      "What is your notice period, or when could you start?"
+    ]
+  }
+];
+
+const INDUSTRY_CATEGORIES = {
+  sales: {
+    label: "Sales-Specific",
+    questions: [
+      "Walk me through how you'd respond to a prospect who says your price is too high.",
+      "Describe a sale you lost. What did you learn from it?",
+      "How do you decide which leads to prioritize when everything feels urgent?"
+    ]
+  },
+  tech: {
+    label: "Tech-Specific",
+    questions: [
+      "Describe a technical problem you solved that you're proud of.",
+      "How do you approach debugging an issue you've never encountered before?",
+      "Tell me about a time you had to explain something technical to a non-technical person."
+    ]
+  },
+  support: {
+    label: "Customer Service-Specific",
+    questions: [
+      "Describe a time you dealt with an upset or angry customer.",
+      "How do you handle a customer request you're not able to fulfill?",
+      "Tell me about a time you turned a negative customer experience into a positive one."
+    ]
+  },
+  marketing: {
+    label: "Marketing-Specific",
+    questions: [
+      "Describe a campaign or piece of content that didn't perform as expected.",
+      "How do you measure whether your work is actually succeeding?",
+      "Tell me about a time you had to make the case for a creative idea using data."
+    ]
+  },
+  finance: {
+    label: "Finance & Admin-Specific",
+    questions: [
+      "Describe a time you caught an error before it became a bigger problem.",
+      "How do you stay organized when handling multiple deadlines at once?",
+      "Tell me about a time you had to explain a financial or administrative issue to a non-specialist."
+    ]
+  },
+  healthcare: {
+    label: "Healthcare-Specific",
+    questions: [
+      "Describe a time you had to stay calm under pressure with a patient or client.",
+      "How do you handle disagreeing with a colleague's approach to care?",
+      "Tell me about a time you had to deliver difficult news to someone."
+    ]
+  },
+  education: {
+    label: "Education-Specific",
+    questions: [
+      "Describe how you adapted your approach for a student who was struggling.",
+      "Tell me about a difficult conversation with a parent, guardian, or stakeholder.",
+      "How do you keep a class or group engaged over time?"
+    ]
+  },
+  general: {
+    label: "General Workplace",
+    questions: [
+      "Tell me about a time you had to adapt to a major change at work.",
+      "Describe how you manage your time when everything feels like a priority.",
+      "Tell me about a goal you set for yourself and how you achieved it."
+    ]
+  }
+};
+
+const STAR_HINTS = {
+  situation: "Set the scene. Where were you, and what was going on? One or two sentences.",
+  task: "What was your specific responsibility or goal in that moment?",
+  action: "What did YOU do, step by step? This is usually the longest part of your answer.",
+  result: "What happened? Use a number or clear outcome if you can."
+};
+
+const EXAMPLES = {
+  core: {
+    "behavioral-0": {situation:"I've spent the last three years working in operations for a mid-sized retail company, and before that I was in a customer-facing role for two years.", task:"My current job is to keep the day-to-day supply chain running and to spot small issues before they become big ones.", action:"Over the past year I rebuilt our stock tracking sheet into something the whole team could actually use, and started a short weekly check-in to catch problems early.", result:"Stockouts dropped noticeably, and I was asked to train two new hires on the new process — part of why I'm looking for a role with more ownership."},
+    "behavioral-1": {situation:"I once promised a client a launch date for a project without checking with the design team first.", task:"I needed to either meet that date or explain the delay without damaging the relationship.", action:"I went back to the client early, was upfront about the miscalculation, and proposed a revised timeline with a partial delivery in between.", result:"The client appreciated the honesty and we kept the account. I never commit to a deadline now without confirming with everyone involved first."},
+    "behavioral-2": {situation:"A coworker was out sick during our busiest week of the month, and their tasks were at risk of being missed entirely.", task:"I wasn't asked to cover for them, but I knew the tasks would fall through the cracks otherwise.", action:"I stayed late for two days to handle the overflow, prioritizing tasks with hard deadlines first, and briefed my coworker when they returned.", result:"Nothing was missed, and my manager mentioned it in my next review as an example of reliability."},
+    "behavioral-3": {situation:"My team switched project management tools with only a week's notice before a major deadline.", task:"I needed to learn the new tool well enough to keep the team on track without losing time.", action:"I went through the tool's tutorials one evening, set up our board the next morning, and ran a 15-minute walkthrough for the team.", result:"We didn't lose a single day of progress, and two teammates said the walkthrough made the switch much less stressful."},
+    "behavioral-4": {situation:"Our team had a recurring customer complaint about slow response times that had gone unresolved for months.", task:"I was asked to figure out why and propose a fix.", action:"I mapped out the whole response process, found a bottleneck at the handoff between two teams, and proposed a small routing change.", result:"Response time dropped by nearly half within a month, and the process is still used today."},
+
+    "problem-solving-0": {situation:"Our regional office needed to run a customer outreach campaign, but the quarter's budget had already been committed to a larger initiative.", task:"I needed to still reach a meaningful number of customers without any new spend approved.", action:"I pulled our existing customer data to build a smaller, more targeted list, and used automation features already built into our current tools instead of requesting anything new.", result:"We reached most of the original target audience at zero additional cost, and it became our default approach for tight-budget campaigns going forward."},
+    "problem-solving-1": {situation:"I sent a client invoice with the wrong figures because I copied from an old template.", task:"I needed to correct it before it caused payment issues or embarrassment for the company.", action:"I called the client directly within the hour, explained the error, and sent a corrected invoice with an apology.", result:"The client appreciated the quick fix, and I now double-check template figures against the current contract every time."},
+    "problem-solving-2": {situation:"Midway through a scheduled project, my manager reassigned me to an urgent client issue that needed same-day attention.", task:"I had to protect the urgent issue without completely dropping my other commitments.", action:"I flagged which of my original tasks could wait a day, informed the people depending on them, and focused fully on the urgent issue.", result:"Both the urgent issue and the original project were completed on time, and my manager noted how smoothly I handled the switch."},
+    "problem-solving-3": {situation:"A vendor missed a shipment deadline and I couldn't get a clear answer on when the goods would actually arrive.", task:"I had to decide whether to wait or source an alternative supplier on short notice.", action:"I set a firm cutoff time, and when the vendor still hadn't confirmed, I moved forward with a backup supplier I'd used before.", result:"We avoided a stockout, and I built a shortlist of backup suppliers afterward so the decision would be easier next time."},
+    "problem-solving-4": {situation:"Our team was manually compiling a weekly report from three different spreadsheets, which took hours.", task:"I wanted to cut down the time spent without losing accuracy.", action:"I built a single template that pulled from the same three sources with simple formulas, and tested it against two weeks of old reports to confirm it matched.", result:"The weekly report now takes about 20 minutes instead of several hours, and two other teams adopted the same template."},
+
+    "teamwork-0": {situation:"A colleague and I disagreed on how to divide responsibilities on a shared project, and it started to affect our working relationship.", task:"I needed to resolve it without involving our manager if possible.", action:"I asked to talk it through directly, focused on what each of us actually needed to succeed, and we agreed on a split based on our strengths.", result:"We finished the project on time and were paired together again on the next one."},
+    "teamwork-1": {situation:"A teammate on a joint project often missed updates and left me finding out about changes late.", task:"I needed the project to stay on track despite the communication gap.", action:"I set up a short daily check-in specifically with them, which made it easier to catch changes early without singling them out.", result:"Communication improved noticeably, and we delivered the project without any surprises."},
+    "teamwork-2": {situation:"Our team was asked to prepare a client presentation with only three days' notice.", task:"My part was to pull together the data and visuals while two others handled the narrative and delivery.", action:"I flagged early which numbers needed double-checking, split the workload clearly, and we did a full run-through the night before.", result:"The client approved the proposal on the spot, and the presentation became a template our team still reuses."},
+    "teamwork-3": {situation:"My manager wanted to cut a testing step from our process to save time on a tight deadline.", task:"I was concerned it would introduce errors we wouldn't catch until after launch.", action:"I raised my concern privately, showed a quick example of an error the step had caught before, and suggested a shortened version instead of skipping it entirely.", result:"My manager agreed to the shortened version, and it caught two issues before launch."},
+    "teamwork-4": {situation:"In a performance review, my manager pointed out that my written updates were often too long and hard to skim.", task:"I wanted to take the feedback seriously rather than get defensive about it.", action:"I asked for an example of a good update from someone else on the team, and started using a shorter format with bullet points.", result:"My manager noted the improvement within a month, and my updates get read and responded to faster now."},
+
+    "career-story-0": {situation:"I've grown a lot in my current role over the past two years and learned most of what the position can teach me.", task:"I've been looking for a role that lets me take on more ownership than I currently have.", action:"I've been building skills in [relevant area] on my own time to prepare for that next step.", result:"This role stood out because it matches exactly the kind of ownership and growth I've been ready for."},
+    "career-story-1": {situation:"I took [length of time] off between roles to handle a family responsibility.", task:"I wanted to make sure that time was handled well before returning to work fully focused.", action:"During that time I also kept my skills current by [specific activity — a course, freelance project, etc.].", result:"I'm now able to commit fully, and that time gave me clarity on the kind of role I actually want next."},
+    "career-story-2": {situation:"I've followed [company]'s work in [specific area] for a while.", task:"I was looking for a company where my experience in [skill] would actually be used, not just listed on a job description.", action:"I looked into how your team approaches [specific practice relevant to the company], and it matches how I like to work.", result:"That's why this role feels like a real fit rather than just another application."},
+    "career-story-3": {situation:"Right now I'm focused on building strong, practical experience in [field].", task:"My goal over the next few years is to grow from doing the work well to also helping guide how it's done.", action:"I'm already looking for opportunities to mentor newer teammates and take on more planning responsibility where I can.", result:"In five years, I'd like to be trusted with that kind of responsibility, ideally within a company like this one."},
+    "career-story-4": {situation:"In my current role, I've enjoyed the parts of my job that involve [specific responsibility].", task:"I'm looking for a role where that kind of work is a bigger part of the job, not just a small piece of it.", action:"I've been intentional about applying to roles that match that, rather than applying broadly.", result:"That's part of why this role caught my attention specifically."},
+
+    "closing-0": {situation:"I've researched typical compensation for this role and level of experience in this market.", task:"I want a number that's fair to both sides, based on the responsibilities of the role.", action:"Based on that research and my experience, I'm looking at a range of [range].", result:"I'm flexible depending on the full offer, and happy to hear what you have budgeted."},
+    "closing-1": {situation:"Before this conversation, I looked into [something specific about the company or team].", task:"I want to make sure this role is the right fit on both sides, not just that I'm a fit for you.", action:"I'd like to ask about [specific question — e.g. what success looks like in the first 90 days].", result:"That kind of detail helps me understand whether I can genuinely do my best work here."},
+    "closing-2": {situation:"I can't speak to the other candidates, but I can speak to what I bring.", task:"You need someone who can [core requirement of the role] and do it reliably.", action:"I've done exactly that in my current role — [specific brief example] — and I bring that same approach here.", result:"I'm confident I can deliver that same reliability and results in this role."},
+    "closing-3": {situation:"I'm currently employed and want to leave my current role professionally.", task:"I need to give appropriate notice so I don't leave my team in a difficult spot.", action:"My standard notice period is [X weeks], though I can discuss flexibility if needed.", result:"I can be fully available to start by [date]."}
+  },
+  industry: {
+    sales: [
+      {situation:"A prospect I was closing said our price was too high compared to a competitor's offer.", task:"I needed to either justify the price or find a fair way forward without just discounting blindly.", action:"I asked what specifically the competitor's offer included, walked through what came with ours that theirs didn't, and offered a smaller trial package instead of a discount.", result:"They chose the trial, and it converted to a full contract two months later."},
+      {situation:"I lost a deal to a competitor after weeks of back-and-forth with a promising client.", task:"I wanted to understand exactly why, rather than just moving on.", action:"I asked the prospect directly for honest feedback on why they chose the other option.", result:"It came down to onboarding speed, which I now address upfront in every pitch."},
+      {situation:"During a product launch, I had far more inbound leads than I could follow up with personally in a day.", task:"I needed a fast way to sort who to call first.", action:"I ranked leads by deal size and how recently they'd engaged, and handled the top group myself while a teammate covered the rest.", result:"We didn't lose any high-value leads to slow response time that month."}
+    ],
+    tech: [
+      {situation:"Our application was crashing intermittently for a subset of users and we couldn't reproduce it reliably.", task:"I needed to find the root cause without clear steps to reproduce it.", action:"I added targeted logging around the suspected area, waited for it to recur, and traced it to a race condition under high load.", result:"Fixing it removed our most-reported bug, and the logging approach became our default for hard-to-reproduce issues."},
+      {situation:"I once hit an error message I'd never seen in a library I hadn't used before.", task:"I needed to understand it well enough to fix it, not just patch around it.", action:"I read the relevant part of the library's source code, reproduced the issue in isolation, and tested a fix against that minimal case first.", result:"I found the actual cause rather than a workaround, and documented it for the team."},
+      {situation:"A client wanted to know why a feature they'd requested would take three weeks instead of a few days.", task:"I needed to explain the technical complexity without jargon.", action:"I used an analogy comparing it to renovating a house's foundation versus repainting a wall, then broke the three weeks into visible milestones.", result:"The client understood the timeline and stopped pushing for an unrealistic date."}
+    ],
+    support: [
+      {situation:"A customer called in furious after a delivery was delayed twice.", task:"I needed to calm the situation and actually resolve the issue, not just apologize.", action:"I let them finish venting without interrupting, then confirmed exactly what had gone wrong and offered a concrete fix with a firm new delivery date.", result:"They stayed a customer, and later left a review specifically mentioning how the issue was handled."},
+      {situation:"A customer asked for a refund outside our policy window.", task:"I needed to say no without losing their trust or the relationship.", action:"I explained the policy clearly, then offered the closest alternative we could actually do, like store credit.", result:"They accepted the alternative and continued ordering from us afterward."},
+      {situation:"A customer received a damaged product and was ready to leave a bad review.", task:"I wanted to fix the immediate problem and rebuild their confidence in us.", action:"I sent a replacement overnight at no cost and followed up personally once it arrived.", result:"They updated their review to a positive one and mentioned the follow-up specifically."}
+    ],
+    marketing: [
+      {situation:"A social campaign I ran got very little engagement despite a decent budget.", task:"I needed to figure out why before running the next one the same way.", action:"I compared it against a similar campaign that had performed well and found the messaging was too generic for the specific audience segment.", result:"The next campaign used sharper, segment-specific messaging and outperformed the original by a wide margin."},
+      {situation:"I was asked to run a content series without a clear success metric defined upfront.", task:"I wanted to avoid just producing content without knowing if it mattered.", action:"I set a specific engagement and conversion target before launch and tracked it weekly instead of just publishing and moving on.", result:"That gave us a clear, honest read that two of the five pieces were driving most of the results, which shaped the next series."},
+      {situation:"I wanted to try a different content format that leadership was skeptical about.", task:"I needed evidence, not just enthusiasm, to get buy-in.", action:"I ran a small test with a limited budget and presented the results alongside our usual format's numbers.", result:"The data showed a clear lift, and leadership approved the format for wider use."}
+    ],
+    finance: [
+      {situation:"While reviewing a monthly report, I noticed a figure that didn't match the previous month's trend.", task:"I needed to check whether it was a real change or a mistake before it went out.", action:"I traced it back through the source data and found a formula had broken after a spreadsheet update.", result:"I fixed it before the report was sent, avoiding an inaccurate figure reaching leadership."},
+      {situation:"During month-end close, I often have several reports due within the same two days.", task:"I need all of them accurate and on time, not just the most urgent one.", action:"I keep a simple checklist ranked by deadline and dependency, and start the ones needing input from other people first.", result:"I haven't missed a month-end deadline using that approach."},
+      {situation:"A department head was confused about why their budget appeared over the limit mid-quarter.", task:"I needed to explain the timing issue clearly without financial jargon.", action:"I walked them through a simple chart showing committed versus spent funds, rather than just the raw numbers.", result:"They understood it wasn't an overspend, just timing, and asked for that same chart format going forward."}
+    ],
+    healthcare: [
+      {situation:"A patient became anxious and upset while waiting longer than expected for a routine procedure.", task:"I needed to reassure them without dismissing their concern.", action:"I sat with them for a few minutes, explained honestly why the wait was longer than usual, and checked in on the actual delay.", result:"They calmed down, and later thanked the team for being upfront rather than vague."},
+      {situation:"A colleague wanted to proceed with an approach I thought overlooked a detail in the patient's history.", task:"I needed to raise it respectfully without undermining them in front of the patient.", action:"I asked to speak privately, mentioned the detail I was concerned about, and asked if we should double check together.", result:"We caught the oversight together, and the patient's plan was adjusted accordingly."},
+      {situation:"I had to tell a patient's family that a procedure would need to be delayed.", task:"I needed to be honest and clear while staying compassionate.", action:"I explained the reason plainly, gave them a realistic new timeframe, and made sure they had a way to ask follow-up questions.", result:"They were understandably disappointed but appreciated the direct and honest communication."}
+    ],
+    education: [
+      {situation:"A student was consistently falling behind on a topic that most of the class had already grasped.", task:"I needed to help them catch up without singling them out in front of peers.", action:"I set up a short one-on-one session using a different explanation method than I'd used in class, based on how they described their confusion.", result:"They caught up within two sessions and started participating more in class."},
+      {situation:"A parent was upset about their child's grade on an assignment and felt it was unfair.", task:"I needed to address their concern honestly while standing behind a fair grading process.", action:"I walked them through the grading criteria against their child's actual work, point by point.", result:"They understood the reasoning, and asked how their child could improve for next time instead of continuing to dispute the grade."},
+      {situation:"Midway through a term, I noticed engagement dropping during a particularly dense unit.", task:"I wanted to keep the material rigorous without losing the group's attention.", action:"I broke lessons into shorter segments with quick group discussion points instead of long unbroken lectures.", result:"Participation visibly picked back up, and I kept using that structure for other dense units."}
+    ],
+    general: [
+      {situation:"My company switched to a new internal system with very little transition time.", task:"I needed to keep my usual work running while learning the new system.", action:"I set aside the first hour of each day just to learn one part of the new system until I was comfortable.", result:"I was fully up to speed within a week, faster than most of my team."},
+      {situation:"During a particularly busy stretch, I had several tasks all marked urgent by different people.", task:"I needed a way to actually decide what came first.", action:"I quickly checked with each person on the real deadline versus the stated urgency, then reordered based on actual impact.", result:"Everything got done on time, and it became my default approach to competing priorities."},
+      {situation:"I wanted to get more comfortable presenting to groups, since it wasn't a natural strength of mine.", task:"I set a goal to volunteer for at least one presentation per month.", action:"I started with smaller internal updates and worked up to presenting to a wider audience.", result:"Within six months, presenting stopped feeling stressful, and I was asked to lead a client presentation."}
+    ]
+  }
+};
+
+function getExampleForQuestion(q){
+  if(!q) return null;
+  if(q.category === "industry"){
+    const idx = parseInt(q.id.split("-")[1], 10);
+    const set = EXAMPLES.industry[STATE.industry];
+    return set ? set[idx] : null;
+  }
+  return EXAMPLES.core[q.id] || null;
+}
+
+/* ============ STATE ============ */
+let STATE = {
+  industry: "general",
+  role: "",
+  allQuestions: [],   // flattened {id, category, categoryLabel, text}
+  activeId: null
+};
+
+const STORAGE_KEY = "interviewedge_answers_v1";
+const SETUP_KEY = "interviewedge_setup_v1";
+
+function loadAnswers(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  }catch(e){ return {}; }
+}
+function saveAnswers(data){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+/* ============ SETUP ============ */
+function startApp(){
+  const industry = document.getElementById('industrySelect').value;
+  const role = document.getElementById('roleInput').value.trim();
+  STATE.industry = industry;
+  STATE.role = role;
+  localStorage.setItem(SETUP_KEY, JSON.stringify({industry, role}));
+  buildQuestionSet();
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('roleMeta').textContent = role ? ("Practicing for: " + role) : "";
+  renderRail();
+  showPractice();
+  if(STATE.allQuestions.length){
+    selectQuestion(STATE.allQuestions[0].id);
+  }
+}
+
+function buildQuestionSet(){
+  const list = [];
+  CORE_CATEGORIES.forEach(cat=>{
+    cat.questions.forEach((q, i)=>{
+      list.push({id: cat.id+"-"+i, category: cat.id, categoryLabel: cat.label, text: q});
+    });
+  });
+  const ind = INDUSTRY_CATEGORIES[STATE.industry];
+  if(ind){
+    ind.questions.forEach((q,i)=>{
+      list.push({id: "industry-"+i, category: "industry", categoryLabel: ind.label, text: q});
+    });
+  }
+  STATE.allQuestions = list;
+}
+
+/* ============ RAIL ============ */
+function renderRail(){
+  const rail = document.getElementById('rail');
+  const answers = loadAnswers();
+  const cats = [...CORE_CATEGORIES.map(c=>({id:c.id,label:c.label})), 
+    INDUSTRY_CATEGORIES[STATE.industry] ? {id:"industry", label: INDUSTRY_CATEGORIES[STATE.industry].label} : null
+  ].filter(Boolean);
+
+  let html = "";
+  cats.forEach(cat=>{
+    const qs = STATE.allQuestions.filter(q=>q.category===cat.id);
+    const doneCount = qs.filter(q=>answers[q.id] && answers[q.id].situation).length;
+    html += `<h2>${cat.label} <span class="cat-progress">(${doneCount}/${qs.length})</span></h2>`;
+    qs.forEach(q=>{
+      const done = answers[q.id] && answers[q.id].situation;
+      html += `<div class="q-item${q.id===STATE.activeId ? ' active':''}" onclick="selectQuestion('${q.id}')">
+        <span class="q-dot${done?' done':''}"></span>
+        <span>${q.text}</span>
+      </div>`;
+    });
+  });
+  rail.innerHTML = html;
+}
+
+/* ============ PRACTICE VIEW ============ */
+let timerInterval = null;
+let timerSeconds = 0;
+
+function selectQuestion(id){
+  STATE.activeId = id;
+  renderRail();
+  renderPractice();
+}
+
+function renderPractice(){
+  const q = STATE.allQuestions.find(x=>x.id===STATE.activeId);
+  const panel = document.getElementById('practicePanel');
+  if(!q){
+    panel.innerHTML = `<p class="empty-note">Pick a question from the left to begin.</p>`;
+    return;
+  }
+  const answers = loadAnswers();
+  const saved = answers[q.id] || {};
+
+  stopTimer();
+  timerSeconds = 0;
+
+  const example = getExampleForQuestion(q);
+  const exampleSection = example ? `
+      <button class="example-toggle" onclick="toggleExample()" id="exampleToggleBtn">See an example of a completed answer</button>
+      <div class="example-box" id="exampleBox">
+        <p><b>Situation:</b> ${example.situation}</p>
+        <p><b>Task:</b> ${example.task}</p>
+        <p><b>Action:</b> ${example.action}</p>
+        <p><b>Result:</b> ${example.result}</p>
+      </div>` : '';
+
+  panel.innerHTML = `
+    <div class="q-header">
+      <span class="cat-label">${q.categoryLabel}</span>
+      <h2>${q.text}</h2>
+      <p class="helper">Build your answer using the STAR method. Keep it specific and honest — real details are more convincing than perfect ones.</p>
+      ${exampleSection}
+    </div>
+
+    <div class="timer-row">
+      <span class="timer-display" id="timerDisplay">00:00</span>
+      <button class="btn btn-ghost" id="timerBtn" onclick="toggleTimer()">Start practice timer</button>
+      <span class="helper" style="font-size:12.5px;">Aim for a 60–90 second spoken answer.</span>
+    </div>
+
+    ${starField('situation','Situation', saved.situation)}
+    ${starField('task','Task', saved.task)}
+    ${starField('action','Action', saved.action)}
+    ${starField('result','Result', saved.result)}
+
+    <div class="save-row">
+      <button class="btn btn-primary" onclick="saveCurrentAnswer()">Save this answer</button>
+      <span class="save-status" id="saveStatus">${saved.savedAt ? "Last saved " + new Date(saved.savedAt).toLocaleString() : ""}</span>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="moveQuestion(-1)">← Previous</button>
+      <button class="btn btn-ghost" onclick="moveQuestion(1)">Next →</button>
+    </div>
+  `;
+}
+
+function starField(key, label, value){
+  return `
+    <div class="star-field">
+      <label>${label} <span class="hint">${STAR_HINTS[key]}</span></label>
+      <textarea id="field-${key}" placeholder="Type your ${label.toLowerCase()} here...">${value ? escapeHtml(value) : ""}</textarea>
+    </div>
+  `;
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.innerText = str;
+  return d.innerHTML;
+}
+
+function toggleExample(){
+  const box = document.getElementById('exampleBox');
+  const btn = document.getElementById('exampleToggleBtn');
+  const showing = box.classList.toggle('show');
+  btn.textContent = showing ? "Hide example" : "See an example of a completed answer";
+}
+
+function saveCurrentAnswer(){
+  const q = STATE.allQuestions.find(x=>x.id===STATE.activeId);
+  if(!q) return;
+  const answers = loadAnswers();
+  answers[q.id] = {
+    category: q.categoryLabel,
+    question: q.text,
+    situation: document.getElementById('field-situation').value.trim(),
+    task: document.getElementById('field-task').value.trim(),
+    action: document.getElementById('field-action').value.trim(),
+    result: document.getElementById('field-result').value.trim(),
+    savedAt: Date.now()
+  };
+  saveAnswers(answers);
+  document.getElementById('saveStatus').textContent = "Saved just now.";
+  renderRail();
+}
+
+function moveQuestion(dir){
+  const idx = STATE.allQuestions.findIndex(x=>x.id===STATE.activeId);
+  const nextIdx = idx + dir;
+  if(nextIdx >= 0 && nextIdx < STATE.allQuestions.length){
+    selectQuestion(STATE.allQuestions[nextIdx].id);
+  }
+}
+
+function toggleTimer(){
+  const btn = document.getElementById('timerBtn');
+  if(timerInterval){
+    stopTimer();
+    btn.textContent = "Start practice timer";
+  } else {
+    timerInterval = setInterval(()=>{
+      timerSeconds++;
+      const m = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+      const s = String(timerSeconds%60).padStart(2,'0');
+      const el = document.getElementById('timerDisplay');
+      if(el) el.textContent = m+":"+s;
+    }, 1000);
+    btn.textContent = "Stop timer";
+  }
+}
+function stopTimer(){
+  if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+}
+
+/* ============ VIEW SWITCHING ============ */
+function showPractice(){
+  document.getElementById('practicePanel').style.display = 'block';
+  document.getElementById('reviewPanel').style.display = 'none';
+  renderPractice();
+}
+function showReview(){
+  document.getElementById('practicePanel').style.display = 'none';
+  document.getElementById('reviewPanel').style.display = 'block';
+  renderReview();
+}
+
+function renderReview(){
+  const answers = loadAnswers();
+  const panel = document.getElementById('reviewPanel');
+  const entries = Object.values(answers).filter(a=>a.situation || a.task || a.action || a.result);
+  if(entries.length === 0){
+    panel.innerHTML = `<p class="empty-note">You haven't saved any answers yet. Go to Practice and save your first one.</p>`;
+    return;
+  }
+  entries.sort((a,b)=> b.savedAt - a.savedAt);
+  panel.innerHTML = `<h2 class="serif" style="color:var(--navy);">Your saved answers (${entries.length})</h2>` +
+    entries.map(a=>`
+      <div class="review-item">
+        <span class="cat">${a.category}</span>
+        <h3>${a.question}</h3>
+        <div class="star-line"><b>Situation:</b> ${a.situation ? escapeHtml(a.situation) : '—'}</div>
+        <div class="star-line"><b>Task:</b> ${a.task ? escapeHtml(a.task) : '—'}</div>
+        <div class="star-line"><b>Action:</b> ${a.action ? escapeHtml(a.action) : '—'}</div>
+        <div class="star-line"><b>Result:</b> ${a.result ? escapeHtml(a.result) : '—'}</div>
+      </div>
+    `).join('');
+}
+
+/* ============ EXPORT ============ */
+function exportAnswers(){
+  const answers = loadAnswers();
+  const entries = Object.values(answers).filter(a=>a.situation || a.task || a.action || a.result);
+  if(entries.length === 0){
+    alert("You don't have any saved answers to export yet.");
+    return;
+  }
+  let text = "INTERVIEWEDGE — MY PRACTICE ANSWERS\n";
+  text += "Generated " + new Date().toLocaleString() + "\n";
+  text += "================================================\n\n";
+  entries.forEach(a=>{
+    text += "[" + a.category + "]\n";
+    text += "Q: " + a.question + "\n\n";
+    text += "Situation: " + (a.situation || "—") + "\n";
+    text += "Task: " + (a.task || "—") + "\n";
+    text += "Action: " + (a.action || "—") + "\n";
+    text += "Result: " + (a.result || "—") + "\n";
+    text += "\n------------------------------------------------\n\n";
+  });
+  const blob = new Blob([text], {type: "text/plain"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "interviewedge-answers.txt";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ============ RESTORE PRIOR SESSION ============ */
+(function restore(){
+  try{
+    const setup = JSON.parse(localStorage.getItem(SETUP_KEY));
+    if(setup && setup.industry){
+      document.getElementById('industrySelect').value = setup.industry;
+      document.getElementById('roleInput').value = setup.role || "";
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
